@@ -68,16 +68,22 @@ namespace GeometryMapper
                         )
                     );
                 case "Half-Plane":
-                    Vector3 up =  ((Quaternion.AngleAxis(90, getRotationAxis(whatDirectionImShooting)) * whatDirectionImShooting)); // this might not be right idk
+                    // supposed to rotate the vector up 90 degrees, finding the rotation axis using the perpendicular line in the plane
+                    Vector3 up =  Quaternion.AngleAxis(90, getRotationAxis(whatDirectionImShooting)) * whatDirectionImShooting;
+
                     float angleBetweenXandUp = Mathf.Acos(
                         (Vector3.Dot(up, new Vector3(0,1,0)))/(up.magnitude)
                     );
+
+                    // projects the direction shot to the xz-axis (the plane)
                     Vector3 flatDir = new Vector3(whatDirectionImShooting.x, 0, whatDirectionImShooting.z);
+
                     float radius = whatDirectionImShooting.y / Mathf.Cos(angleBetweenXandUp);
 
                     float angleBetweenXandDir = Mathf.Acos(
                         ((Vector3.Dot(flatDir, new Vector3(1,0,0)))/(flatDir.magnitude))
                     );
+
                     Vector3 velocityMapped = new Vector3(
                       -1 * Mathf.Cos(angleBetweenXandDir) * Mathf.Cos(t),
                       Mathf.Sin(t),
