@@ -55,6 +55,18 @@ namespace GeometryMapper
             Vector2 orthogonal = Vector2.Perpendicular(projected);
             return new Vector3(orthogonal.x, 0, orthogonal.y);
         }
+        private static ComplexNum FLTGamma(float theta, float time) {
+            ComplexNum numerator = new ComplexNum(
+                Mathf.Exp(time)*Mathf.Cos(theta/2),
+                Mathf.Sin(theta/2)
+            );
+            ComplexNum denominator = new ComplexNum(
+                Mathf.Exp(time)*Mathf.Sin(theta/2),
+                -1 * Mathf.Cos(theta/2)
+            );
+            return numerator/denominator;
+        }
+
         public static Vector3 positionMap(Vector3 whereImShootingFrom, Vector3 whatDirectionImShooting, float t)
         {
 
@@ -68,62 +80,20 @@ namespace GeometryMapper
                         )
                     );
                 case "Half-Plane":
-
-                    // test logs
-                    float testDir1 = (float)Mathf.Pow(2, .5f)/2;
-                    float testDir2 = (float)Mathf.Pow(2, .5f)/2;
-                    Vector3 test = new Vector3(testDir1, testDir2, 0);
-                    Debug.Log(test);
-                    Vector3 test2 = Quaternion.AngleAxis(90, getRotationAxis(test)) * test;
-                    Vector3 testProjection = new Vector3(test2.x, 0, test2.z);
-                    float testAngleBetweenXZandUp = Mathf.Acos(
-                           (Vector3.Dot(test2, testProjection))/(test2.magnitude * testProjection.magnitude)
-                       );
-                    Vector3 testFlatDir = new Vector3(test.x, 0, test.z);
-                    float testRadius = test.y / Mathf.Cos(testAngleBetweenXZandUp);
-
-                    float testAngleBetweenXZandUpXandDir = Mathf.Acos(
-                        ((Vector3.Dot(testFlatDir, new Vector3(1,0,0)))/(testFlatDir.magnitude))
-                    );
-                    Vector3 testMapped = new Vector3(
-                      Mathf.Cos(testAngleBetweenXZandUpXandDir) * Mathf.Cos(testAngleBetweenXZandUp),
-                      Mathf.Sin(testAngleBetweenXZandUp),
-                      Mathf.Sin(testAngleBetweenXZandUpXandDir) * Mathf.Cos(testAngleBetweenXZandUp)
-                    );
-                    Debug.Log(testMapped);
-
-
-                    // supposed to rotate the vector up 90 degrees, finding the rotation axis using the perpendicular line in the plane
-                    Vector3 up =  Quaternion.AngleAxis(90, getRotationAxis(whatDirectionImShooting)) * whatDirectionImShooting;
-                    Vector3 projection = new Vector3(up.x, 0, up.z);
-                    float angleBetweenXZandUp = Mathf.Acos(
-                        (Vector3.Dot(up, projection))/(up.magnitude * projection.magnitude)
+                    float phi = Mathf.Atan2(whatDirectionImShooting.z, whereImShootingFrom.x);
+                    float theta = Mathf.Acos(whatDirectionImShooting.y);
+                    ComplexNum geodesic = FLTGamma(
+                        theta, t
                     );
 
-                    // projects the direction shot to the xz-axis (the plane)
-                    Vector3 flatDir = new Vector3(whatDirectionImShooting.x, 0, whatDirectionImShooting.z);
-
-                    float radius = whatDirectionImShooting.y / Mathf.Cos(angleBetweenXZandUp);
-
-                    float angleBetweenXandDir = Mathf.Acos(
-                        ((Vector3.Dot(flatDir, new Vector3(1,0,0)))/(flatDir.magnitude))
-                    );
-
-
-
-//                    Vector3 projection2 = new Vector3(whatDirectionImShooting.x, 0, whatDirectionImShooting.z);
-//                    float angleBetweenXZandDir = Mathf.Acos(
-//                        (Vector3.Dot(whatDirectionImShooting, projection2))/(whatDirectionImShooting.magnitude * projection2.magnitude)
-//                    );
-
-
-
+                    // Mostly right, just need to fix rotation
                     Vector3 positionMapped = new Vector3(
-                      Mathf.Cos(angleBetweenXandDir) * Mathf.Cos(angleBetweenXZandUp - t),
-                      Mathf.Sin(angleBetweenXZandUp - t),
-                      Mathf.Sin(angleBetweenXandDir) * Mathf.Cos(angleBetweenXZandUp - t)
+                        Mathf.Cos(phi)*geodesic.r*whereImShootingFrom.y + whereImShootingFrom.x,
+                        geodesic.i*whereImShootingFrom.y,
+                        Mathf.Sin(phi)*geodesic.r*whereImShootingFrom.y + whereImShootingFrom.z
                     );
-                    return whereImShootingFrom + positionMapped * radius;
+
+                    return positionMapped;
 
                 default:
                     return whereImShootingFrom + whatDirectionImShooting*t;
