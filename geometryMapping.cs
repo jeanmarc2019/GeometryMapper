@@ -80,7 +80,7 @@ namespace GeometryMapper
                         )
                     );
                 case "Half-Plane":
-                    float phi = Mathf.Atan2(whatDirectionImShooting.z, whereImShootingFrom.x);
+                    float phi = Mathf.Atan2(whatDirectionImShooting.z, whatDirectionImShooting.x);
                     float theta = Mathf.Acos(whatDirectionImShooting.y);
                     ComplexNum geodesic = FLTGamma(
                         theta, t
