@@ -86,7 +86,6 @@ namespace GeometryMapper
                         theta, t
                     );
 
-                    // Mostly right, just need to fix rotation
                     Vector3 positionMapped = new Vector3(
                         Mathf.Cos(phi)*geodesic.r*whereImShootingFrom.y + whereImShootingFrom.x,
                         geodesic.i*whereImShootingFrom.y,
