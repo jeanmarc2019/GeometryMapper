@@ -6,7 +6,7 @@ namespace GeometryMapper
 {
     class PhysicsHelper
     {
-        public static string currentGeometry = "Half-Space"; // default is Nil geometry
+        public static string currentGeometry = "Half-Space"; // default is Half-Space geometry
 
         public static void changeGeometry(String geometry)
         {
