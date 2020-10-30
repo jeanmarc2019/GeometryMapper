@@ -6,7 +6,7 @@ namespace GeometryMapper
 {
     class PhysicsHelper
     {
-        public static string currentGeometry = "Half-Plane"; // default is Nil geometry
+        public static string currentGeometry = "Half-Space"; // default is Nil geometry
 
         public static void changeGeometry(String geometry)
         {
@@ -79,7 +79,7 @@ namespace GeometryMapper
                             t
                         )
                     );
-                case "Half-Plane":
+                case "Half-Space":
                     float phi = Mathf.Atan2(whatDirectionImShooting.z, whatDirectionImShooting.x);
                     float theta = Mathf.Acos(whatDirectionImShooting.y);
                     ComplexNum geodesic = FLTGamma(
